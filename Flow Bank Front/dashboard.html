@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlowBank - Minha Conta</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0056b3">
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden; 
+        }
+        .mobile-container {
+            width: 100%;
+            max-width: 375px;
+            height: 100%;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            overflow-y: auto; 
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #0056b3 0%, #004494 100%);
+            color: white;
+            padding: 30px 20px 50px 20px; 
+            border-bottom-left-radius: 25px;
+            border-bottom-right-radius: 25px;
+        }
+        .welcome { font-size: 14px; opacity: 0.9; }
+        .user-name { font-size: 22px; font-weight: bold; margin-top: 5px; }
+        
+       
+        .card {
+            background: white;
+            margin: -40px 20px 20px 20px; 
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .saldo-info { display: flex; flex-direction: column; }
+        .label { font-size: 12px; color: #666; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .saldo-valor { font-size: 26px; font-weight: bold; color: #333; }
+        .eye-icon { cursor: pointer; opacity: 0.5; font-size: 20px; }
+
+        
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 25px;
+            margin-bottom: 20px;
+        }
+        .action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .action-btn:active { transform: scale(0.95); }
+        .icon-circle {
+            width: 48px;
+            height: 48px;
+            background-color: #f0f2f5;
+            border-radius: 18px; 
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+            font-size: 22px;
+            color: #0056b3;
+        }
+        .action-label { font-size: 12px; color: #555; font-weight: 500; }
+
+        
+        .cotacao-wrapper { padding: 0 20px; margin-bottom: 20px; }
+        .cotacao-box {
+            background: #eefff3; 
+            padding: 12px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            color: #0d5e28;
+            border: 1px solid #c3e6cb;
+            font-weight: 600;
+        }
+        .section-header { 
+            padding: 0 20px; 
+            margin-bottom: 15px; 
+            display: flex; 
+            justify-content: space-between;
+            align-items: center;
+        }
+        .section-title { font-weight: bold; color: #333; font-size: 18px; }
+        .ver-todos { font-size: 12px; color: #0056b3; font-weight: bold; cursor: pointer; }
+
+        .extrato-list { padding: 0 20px 40px 20px; list-style: none; margin: 0; }
+        .extrato-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .icon-cat {
+            width: 40px;
+            height: 40px;
+            background-color: #f9f9f9;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin-right: 15px;
+        }
+        .item-info { flex-grow: 1; }
+        .item-desc { font-weight: 600; font-size: 14px; color: #333; display: block; }
+        .item-date { font-size: 11px; color: #999; margin-top: 3px; }
+        .item-val { font-weight: bold; font-size: 14px; }
+        
+        .red { color: #d9534f; }
+        .green { color: #28a745; }
+    </style>
+</head>
+<body>
+
+    <div class="mobile-container">
+        <header class="header" role="banner">
+            <div class="welcome">Olá,</div>
+            <div class="user-name" id="nomeUsuario" aria-label="Nome do usuário logado">Carregando...</div>
+        </header>
+
+        <main>
+            <section class="card" aria-labelledby="label-saldo">
+                <div class="saldo-info">
+                    <span id="label-saldo" class="label">Seu Saldo Disponível</span>
+                    <div class="saldo-valor" id="valorSaldo">R$ ...</div>
+                </div>
+                <div class="eye-icon" onclick="toggleSaldo()" aria-label="Ocultar ou mostrar saldo">👁️</div>
+            </section>
+
+            <nav class="actions" aria-label="Menu de ações rápidas">
+                <div class="action-btn" onclick="msgIndisponivel('Pix')" role="button" tabindex="0">
+                    <div class="icon-circle">💠</div>
+                    <span class="action-label">Pix</span>
+                </div>
+                <div class="action-btn" onclick="msgIndisponivel('Pagar')" role="button" tabindex="0">
+                    <div class="icon-circle">📄</div>
+                    <span class="action-label">Pagar</span>
+                </div>
+                <div class="action-btn" onclick="msgIndisponivel('Transferir')" role="button" tabindex="0">
+                    <div class="icon-circle">💸</div>
+                    <span class="action-label">Transf.</span>
+                </div>
+                <div class="action-btn" onclick="fazerLogout()" role="button" tabindex="0">
+                    <div class="icon-circle" style="background-color: #fff0f0; color: #d9534f;">🚪</div>
+                    <span class="action-label">Sair</span>
+                </div>
+            </nav>
+
+            <div class="cotacao-wrapper">
+                <div class="cotacao-box" id="cotacao" aria-live="polite">
+                    ⏳ Buscando Dólar...
+                </div>
+            </div>
+
+            <div class="section-header">
+                <span class="section-title">Extrato</span>
+                <span class="ver-todos" onclick="alert('Histórico completo em breve!')">Ver tudo</span>
+            </div>
+            <ul class="extrato-list" id="listaExtrato" aria-label="Lista de últimas transações">
+                <li style="text-align:center; color:grey; padding:20px;">Atualizando...</li>
+            </ul>
+        </main>
+    </div>
+
+    <script>
+        const usuario = localStorage.getItem("usuarioLogado") || "Visitante";
+        document.getElementById("nomeUsuario").innerText = usuario;
+        
+        
+        function fazerLogout() {
+            if(confirm("Deseja realmente sair do FlowBank?")) {
+                localStorage.removeItem("usuarioLogado");
+                window.location.href = "index.html";
+            }
+        }
+
+        function msgIndisponivel(func) {
+            alert(`A função '${func}' estará disponível na versão 2.0! \n(Recurso em desenvolvimento no MVP)`);
+        }
+
+        
+        let saldoVisivel = true;
+        function toggleSaldo() {
+            const el = document.getElementById("valorSaldo");
+            if (saldoVisivel) {
+                el.dataset.valorReal = el.innerText; 
+                el.innerText = "R$ ••••";
+            } else {
+                el.innerText = el.dataset.valorReal;
+            }
+            saldoVisivel = !saldoVisivel;
+        }
+
+        
+        function getData(diasAtras) {
+            const data = new Date();
+            data.setDate(data.getDate() - diasAtras);
+            
+            if (diasAtras === 0) return "Hoje";
+            if (diasAtras === 1) return "Ontem";
+            return data.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+        }
+
+        async function carregarDados() {
+            
+            try {
+                
+                let response = await fetch(`http://localhost:8081/conta/${usuario}`);
+                let dados = await response.json();
+
+                
+                if (dados.saldo === 0) {
+                     console.log("Conta zerada ou nova. Injetando saldo inicial...");
+                     
+                     await fetch(`http://localhost:8081/conta/lancamento?username=${usuario}&descricao=Bônus Inicial&valor=-1500`, { method: 'POST' });
+                     
+                     
+                     response = await fetch(`http://localhost:8081/conta/${usuario}`);
+                     dados = await response.json();
+                }
+
+                
+                document.getElementById("valorSaldo").innerText = "R$ " + dados.saldo.toFixed(2).replace('.', ',');
+
+                
+                const lista = document.getElementById("listaExtrato");
+                lista.innerHTML = ""; 
+                
+                
+                const transacoesFicticias = [
+                    { desc: "Spotify Premium", valor: 21.90, tipo: "saida", icone: "🎵", dia: 0 },
+                    { desc: "Uber Viagem", valor: 15.50, tipo: "saida", icone: "🚗", dia: 1 },
+                    { desc: "Burger King", valor: 35.00, tipo: "saida", icone: "🍔", dia: 2 },
+                    { desc: "Pix Recebido", valor: 50.00, tipo: "entrada", icone: "💠", dia: 3 }
+                ];
+                
+                transacoesFicticias.forEach(item => {
+                    const li = document.createElement("li");
+                    li.className = "extrato-item";
+                    const corValor = item.tipo === 'entrada' ? 'green' : 'red';
+                    const sinal = item.tipo === 'entrada' ? '+ ' : '- ';
+                    
+                    li.innerHTML = `
+                        <div class="icon-cat">${item.icone}</div>
+                        <div class="item-info">
+                            <span class="item-desc">${item.desc}</span>
+                            <span class="item-date">${getData(item.dia)}</span>
+                        </div>
+                        <span class="item-val ${corValor}">${sinal}R$ ${item.valor.toFixed(2).replace('.', ',')}</span>
+                    `;
+                    lista.appendChild(li);
+                });
+
+            } catch (error) {
+                console.error("Erro conta:", error);
+                document.getElementById("valorSaldo").innerText = "Erro Conexão";
+            }
+
+            
+            try {
+                const respMoeda = await fetch("https://economia.awesomeapi.com.br/last/USD-BRL");
+                const dadosMoeda = await respMoeda.json();
+                const valor = parseFloat(dadosMoeda.USDBRL.bid).toFixed(2).replace('.', ',');
+                const variacao = parseFloat(dadosMoeda.USDBRL.pctChange);
+                const seta = variacao >= 0 ? "🔼" : "🔽";
+                
+                document.getElementById("cotacao").innerHTML = 
+                    `${seta} Dólar Hoje: <b>R$ ${valor}</b>`;
+            } catch (e) {
+                document.getElementById("cotacao").innerText = "Serviço Indisponível";
+            }
+        }
+
+        carregarDados();
+    </script>
+</body>
+</html>

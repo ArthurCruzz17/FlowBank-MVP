@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlowBank - Login</title>
+    <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0056b3">
+    <style>
+        
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .mobile-container {
+            width: 100%;
+            max-width: 375px; 
+            height: 100%;
+            max-height: 667px;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-radius: 20px;
+        }
+        h2 { color: #0056b3; text-align: center; margin-bottom: 30px; }
+        input {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover { background-color: #004494; }
+        .logo { text-align: center; font-size: 24px; font-weight: bold; color: #333; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="mobile-container">
+        <div class="logo">🌊 FlowBank</div>
+        <h2>Bem-vindo</h2>
+        
+        <input type="text" id="username" placeholder="Usuário (ex: admin)" value="admin">
+        <input type="password" id="password" placeholder="Senha" value="123456">
+        
+        <button onclick="fazerLogin()">ENTRAR</button>
+        
+        <p style="text-align: center; margin-top: 20px; font-size: 12px; color: grey;">
+            MVP - Projeto A3
+        </p>
+    </div>
+
+    <script>
+        async function fazerLogin() {
+            const usernameInput = document.getElementById('username').value;
+            const passwordInput = document.getElementById('password').value;
+
+        
+            try {
+                await fetch('http://localhost:8080/auth/cadastro', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        username: usernameInput, 
+                        password: passwordInput,
+                        nomeCompleto: "Usuario Teste"
+                    })
+                });
+            } catch (e) {
+                console.log("Usuário provavelmente já existe ou erro de conexão, tentando logar...");
+            }
+
+            
+            try {
+                const response = await fetch('http://localhost:8080/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: usernameInput, password: passwordInput })
+                });
+
+                const textoResposta = await response.text();
+
+                if (textoResposta.includes("sucesso")) {
+                    alert("Login Realizado! Redirecionando...");
+                    
+                    localStorage.setItem("usuarioLogado", usernameInput);
+                    window.location.href = "onboarding.html";
+                } else {
+                    alert("Erro: " + textoResposta);
+                }
+            } catch (error) {
+                alert("Erro ao conectar com o servidor. Verifique se o Java (Porta 8080) está rodando!");
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+</html>
